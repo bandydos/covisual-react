@@ -25,7 +25,7 @@ class Visualize extends React.Component {
         });
       }
     } else {
-      alert(`Something went wrong, status ${response.status}.`)
+      alert(`Something went wrong, status ${response.status}.`);
       return;
     }
 
@@ -35,16 +35,44 @@ class Visualize extends React.Component {
   async componentDidMount() {
     const data = await this.getData();
     console.log(data);
-    this.setState({ records: data },
-      () => console.log('hello')
-    )
-
+    this.setState({
+      loading: false,
+      records: data
+    })
   }
 
+  renderRecords() {
+    const elems = [];
+
+    for (let i = 0; i < this.state.records.length; i++) {
+      elems.push(
+        <div>{this.state.records[i].date} : {this.state.records[i].deaths}</div>
+      )
+    }
+
+    return (
+      <div>
+        <div>
+          <h2>Deaths per date</h2>
+        </div>
+        {elems}
+      </div>
+    )
+  }
 
   render() {
-
-    return <div>Hello {this.state.records}</div>
+    return (
+      <div>
+        <div>
+          {this.state.loading || this.state.records.length < 1 ? (
+            <div>Loading...</div>
+          ) : (
+              this.renderRecords()
+            )
+          }
+        </div>
+      </div>
+    )
   }
 
 }
