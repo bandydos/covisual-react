@@ -1,6 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import 'react-bootstrap';
+import { Button, Navbar, NavDropdown, Nav, Form, FormControl, Table } from 'react-bootstrap';
 
 class Visualize extends React.Component {
   constructor(props) {
@@ -11,8 +13,13 @@ class Visualize extends React.Component {
     }
   }
 
-  async getData() {
+  async getUSData() {
     const url = 'https://api.covidtracking.com/v1/us/daily.json';
+
+    // URL for specific state (expansion).
+    const state = 'ny';
+    const stateurl = 'https://api.covidtracking.com/v1/states/ ' + state + '/daily.json';
+
     const response = await fetch(url);
     const jsonresponse = await response.json();
 
@@ -35,7 +42,7 @@ class Visualize extends React.Component {
   }
 
   async componentDidMount() {
-    const data = await this.getData();
+    const data = await this.getUSData();
     this.setState({
       loading: false,
       records: data
@@ -58,8 +65,8 @@ class Visualize extends React.Component {
     }
 
     return (
-      <div className="container text-center">
-        <table className="table table-striped border border-dark">
+      <div className="container text-center mt-5">
+        <Table striped bordered>
           <thead>
             <tr>
               <th>Date</th>
@@ -68,14 +75,35 @@ class Visualize extends React.Component {
             </tr>
           </thead>
           {elems}
-        </table>
+        </Table>
       </div>
     )
+  }
+
+  showChart() {
+
   }
 
   render() {
     return (
       <div>
+        <Navbar bg="light" expand="lg">
+          <Navbar.Brand href="#home">React-Bootstrap</Navbar.Brand>
+          <Navbar.Toggle aria-controls="basic-navbar-nav" />
+          <Navbar.Collapse id="basic-navbar-nav">
+            <Nav className="mr-auto">
+              <Nav.Link href="#home">Home</Nav.Link>
+              <Nav.Link href="#link">Link</Nav.Link>
+              <NavDropdown title="Dropdown" id="basic-nav-dropdown">
+                <NavDropdown.Item href="#action/3.1">Action</NavDropdown.Item>
+                <NavDropdown.Item href="#action/3.2">Another action</NavDropdown.Item>
+                <NavDropdown.Item href="#action/3.3">Something</NavDropdown.Item>
+                <NavDropdown.Divider />
+                <NavDropdown.Item href="#action/3.4">Separated link</NavDropdown.Item>
+              </NavDropdown>
+            </Nav>
+          </Navbar.Collapse>
+        </Navbar>
         <div>
           {this.state.loading || this.state.records.length < 1 ? (
             <div>Loading...</div>
