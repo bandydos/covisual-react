@@ -46,45 +46,15 @@ class AllStatesRecords extends React.Component {
     })
   }
 
-  renderRecords() {
-    const elems = [];
 
-    for (let i = 0; i < this.state.records.length; i++) {
-      elems.push(
-        <tbody key={i}>
-          <tr>
-            <td>{this.state.records[i].date}</td>
-            <td>{this.state.records[i].deathstoday}</td>
-            <td>{this.state.records[i].deathstotal}</td>
-          </tr>
-        </tbody>
-      )
-    }
-
-    return (
-      <div className="container text-center mt-5">
-        <Table bordered>
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Deaths (day)</th>
-              <th>Deaths (total)</th>
-            </tr>
-          </thead>
-          {elems}
-        </Table>
-      </div>
-    )
-  }
-
-  showChart() {
+  renderChart() {
     const recs = this.state.records;
     const xdates = [];
     const ydeathstoday = [];
     const ydeathstotal = [];
 
     for (let i = recs.length - 1; i >= 0; i--) {
-      if (recs[i].deathstotal > 0) { // When deaths start.
+      if (recs[i].deathstotal > 0) {
         xdates.push(recs[i].date);
         ydeathstoday.push(recs[i].deathstoday);
         ydeathstotal.push(recs[i].deathstotal);
@@ -116,7 +86,12 @@ class AllStatesRecords extends React.Component {
     }
 
     return (
-      <div className="container">
+      <div>
+        <div className="row mt-5 justify-content-center">
+          <div className="col-6 text-center">
+            <h3>US covid-19 death records (all states)</h3>
+          </div>
+        </div>
         <div className="row mt-5 justify-content-center">
           <div className="col-10">
             <Line data={dataTotalDeaths}></Line>
@@ -127,32 +102,68 @@ class AllStatesRecords extends React.Component {
             <Line data={dataDeathsPerDay}></Line>
           </div>
         </div>
+        <br></br><br></br>
       </div>
     )
   }
 
 
+  renderRecords() {
+    const elems = [];
+
+    const NUM_RECORDS = 50;
+
+    for (let i = 0; i < NUM_RECORDS; i++) {
+      elems.push(
+        <tbody key={i}>
+          <tr>
+            <td>{this.state.records[i].date}</td>
+            <td>{this.state.records[i].deathstoday}</td>
+            <td>{this.state.records[i].deathstotal}</td>
+          </tr>
+        </tbody>
+      )
+    }
+
+    return (
+      <div>
+        <div className="row mt-5 justify-content-center">
+          <div className="col-6 text-center">
+            <h3>Last 50 days table (all states)</h3>
+          </div>
+        </div>
+        <div className="row mt-5 justify-content-center">
+          <div className="col-10 text-center">
+            <Table bordered hover>
+              <thead className="bg-primary text-white">
+                <tr>
+                  <th>Date</th>
+                  <th>Deaths (day)</th>
+                  <th>Deaths (total)</th>
+                </tr>
+              </thead>
+              {elems}
+            </Table>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
 
   render() {
     return (
       <div>
         <div className="container">
-          <div className="row mt-5 justify-content-center">
-            <div className="col-6 text-center">
-          <h3>Records for all states</h3>
-            </div>
+          {this.renderChart()}
+          <div>
+            {this.state.loading || this.state.records.length < 1 ? (
+              <div className="container mt-5">Loading...</div>
+            ) : (
+                this.renderRecords()
+              )
+            }
           </div>
-        </div>
-        <div>
-          {this.state.loading || this.state.records.length < 1 ? (
-            <div className="container mt-5">Loading...</div>
-          ) : (
-              this.showChart()
-              
-              //this.renderRecords()
-            )
-          }
         </div>
       </div>
     )
