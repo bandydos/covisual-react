@@ -1,10 +1,12 @@
 import './App.css';
-import Visualize from './components/Visualize';
+import Navigate from './components/Navigate';
+import AllStatesRecords from './components/AllStatesRecords';
 
 function App() {
   return (
     <div>
-      <Visualize></Visualize>
+      <Navigate></Navigate>
+      <AllStatesRecords></AllStatesRecords>
     </div>
   );
 }
