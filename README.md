@@ -12,6 +12,6 @@ Create a React application that gives info about Covid-19 using an API.
 
 * [X] Initialize React app
 * [X] Clean up code 
-* [ ] Research on usefull API's
-* [ ] Visualize in chart
-* [ ] Use CSS lib
+* [X] Research on usefull API's
+* [X] Visualize in chart
+* [X] Use CSS lib
