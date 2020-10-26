@@ -2,7 +2,8 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'react-bootstrap';
-import { Button, Navbar, NavDropdown, Nav, Form, FormControl, Table } from 'react-bootstrap';
+import { Table } from 'react-bootstrap';
+import { Line } from 'react-chartjs-2';
 
 class AllStatesRecords extends React.Component {
   constructor(props) {
@@ -13,17 +14,13 @@ class AllStatesRecords extends React.Component {
     }
   }
 
-  async getUSData() {
+  async getData() {
     const url = 'https://api.covidtracking.com/v1/us/daily.json';
-
-    // URL for specific state (expansion).
-    const state = 'ny';
-    const stateurl = 'https://api.covidtracking.com/v1/states/ ' + state + '/daily.json';
 
     const response = await fetch(url);
     const jsonresponse = await response.json();
 
-    let records = [];
+    const records = [];
 
     if (response.ok) {
       for (let i = 0; i < jsonresponse.length; i++) {
@@ -42,7 +39,7 @@ class AllStatesRecords extends React.Component {
   }
 
   async componentDidMount() {
-    const data = await this.getUSData();
+    const data = await this.getData();
     this.setState({
       loading: false,
       records: data
@@ -66,7 +63,7 @@ class AllStatesRecords extends React.Component {
 
     return (
       <div className="container text-center mt-5">
-        <Table striped bordered>
+        <Table bordered>
           <thead>
             <tr>
               <th>Date</th>
@@ -81,20 +78,79 @@ class AllStatesRecords extends React.Component {
   }
 
   showChart() {
+    const recs = this.state.records;
+    const xdates = [];
+    const ydeathstoday = [];
+    const ydeathstotal = [];
 
+    for (let i = recs.length - 1; i >= 0; i--) {
+      if (recs[i].deathstotal > 0) { // When deaths start.
+        xdates.push(recs[i].date);
+        ydeathstoday.push(recs[i].deathstoday);
+        ydeathstotal.push(recs[i].deathstotal);
+      }
+    }
+
+    const dataTotalDeaths = {
+      labels: xdates,
+      datasets: [
+        {
+          label: 'Total deaths',
+          data: ydeathstotal,
+          borderColor: ['#CD5C5C'],
+          backgroundColor: ['#CD5C5C']
+        }
+      ]
+    }
+
+    const dataDeathsPerDay = {
+      labels: xdates,
+      datasets: [
+        {
+          label: 'Deaths per day',
+          data: ydeathstoday,
+          borderColor: ['#CD5C5C'],
+          backgroundColor: ['#CD5C5C']
+        }
+      ]
+    }
+
+    return (
+      <div className="container">
+        <div className="row mt-5 justify-content-center">
+          <div className="col-10">
+            <Line data={dataTotalDeaths}></Line>
+          </div>
+        </div>
+        <div className="row mt-5 justify-content-center">
+          <div className="col-10">
+            <Line data={dataDeathsPerDay}></Line>
+          </div>
+        </div>
+      </div>
+    )
   }
+
+
+
 
   render() {
     return (
       <div>
-        <div className="container mt-5">
-          <h3>All states</h3>
+        <div className="container">
+          <div className="row mt-5 justify-content-center">
+            <div className="col-6 text-center">
+          <h3>Records for all states</h3>
+            </div>
+          </div>
         </div>
         <div>
           {this.state.loading || this.state.records.length < 1 ? (
             <div className="container mt-5">Loading...</div>
           ) : (
-              this.renderRecords()
+              this.showChart()
+              
+              //this.renderRecords()
             )
           }
         </div>

@@ -11,32 +11,29 @@ class Navigate extends React.Component {
     render() {
         return (
             <Router>
-                <div>
-                    <Navbar bg="light" expand="lg">
-                        <Navbar.Brand>
-                            <Link to="/">Covisual</Link>
-                        </Navbar.Brand>
-                        <Navbar.Toggle aria-controls="basic-navbar-nav" />
-                        <Navbar.Collapse id="basic-navbar-nav">
-                            <Nav className="mr-auto">
-                                <Nav.Link>
-                                    <Link to="/">Home</Link>
-                                </Nav.Link>
-                                <Nav.Link>
-                                    <Link to="/staterecords">State records</Link>
-                                </Nav.Link>
-                            </Nav>
-                        </Navbar.Collapse>
-                    </Navbar>
-                    <Switch>
-                        <Route path="/" exact component={AllStatesRecords}></Route>
-                        <Route path="/staterecords" exact component={StateRecords}></Route>
-                    </Switch>
-                </div>
+                <Navbar bg="primary" expand="lg">
+                    <Navbar.Brand>
+                        <Link to="/" className="text-white">Covisual US</Link>
+                    </Navbar.Brand>
+                    <Navbar.Toggle aria-controls="basic-navbar-nav" className="bg-light" />
+                    <Navbar.Collapse id="basic-navbar-nav">
+                        <Nav className="mr-auto">
+                            <Nav.Link>
+                                <Link to="/" className="text-white">Home</Link>
+                            </Nav.Link>
+                            <Nav.Link>
+                                <Link to="/staterecords" className="text-white">State records</Link>
+                            </Nav.Link>
+                        </Nav>
+                    </Navbar.Collapse>
+                </Navbar>
+                <Switch>
+                    <Route path="/staterecords" exact component={StateRecords}></Route>
+                    <Route path="/" exact component={AllStatesRecords}></Route>
+                </Switch>
             </Router>
         )
     }
 }
-
 
 export default Navigate;

@@ -6,7 +6,6 @@ function App() {
   return (
     <div>
       <Navigate></Navigate>
-      <AllStatesRecords></AllStatesRecords>
     </div>
   );
 }

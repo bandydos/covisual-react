@@ -2,9 +2,9 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'react-bootstrap';
-import { Button, Navbar, NavDropdown, Nav, Form, FormControl, Table } from 'react-bootstrap';
+import { Table } from 'react-bootstrap';
 
-class AllStates extends React.Component {
+class StateRecords extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
@@ -14,16 +14,13 @@ class AllStates extends React.Component {
   }
 
   async getUSData() {
-    const url = 'https://api.covidtracking.com/v1/us/daily.json';
-
-    // URL for specific state (expansion).
-    const state = 'ny';
-    const stateurl = 'https://api.covidtracking.com/v1/states/ ' + state + '/daily.json';
+    const stt = 'ny';
+    const url = `https://api.covidtracking.com/v1/states/${stt}/daily.json`;
 
     const response = await fetch(url);
     const jsonresponse = await response.json();
 
-    let records = [];
+    const records = [];
 
     if (response.ok) {
       for (let i = 0; i < jsonresponse.length; i++) {
@@ -66,8 +63,8 @@ class AllStates extends React.Component {
 
     return (
       <div className="container text-center mt-5">
-        <Table striped bordered>
-          <thead>
+        <Table bordered hover>
+          <thead className="bg-primary text-white">
             <tr>
               <th>Date</th>
               <th>Deaths (day)</th>
@@ -103,4 +100,4 @@ class AllStates extends React.Component {
   }
 }
 
-export default AllStates;
+export default StateRecords;
