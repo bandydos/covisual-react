@@ -1,5 +1,4 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'react-bootstrap';
 import { Table } from 'react-bootstrap';
@@ -14,6 +13,11 @@ class AllStatesRecords extends React.Component {
     }
   }
 
+  cleanupDate(d) {
+    return d.slice(6) + '/' + d.slice(4, 6) + '/' + d.slice(0, 4);
+  }
+
+  // Same as in StateRecords.js but different url (all states).
   async getData() {
     const url = 'https://api.covidtracking.com/v1/us/daily.json';
 
@@ -25,7 +29,7 @@ class AllStatesRecords extends React.Component {
     if (response.ok) {
       for (let i = 0; i < jsonresponse.length; i++) {
         records.push({
-          'date': jsonresponse[i].date,
+          'date': this.cleanupDate(String(jsonresponse[i].date)), 
           'deathstoday': jsonresponse[i].deathIncrease,
           'deathstotal': jsonresponse[i].death
         });
@@ -89,7 +93,7 @@ class AllStatesRecords extends React.Component {
       <div>
         <div className="row mt-5 justify-content-center">
           <div className="col-6 text-center">
-            <h3>US covid-19 death records (all states)</h3>
+            <h3>Covid-19 death records for all states</h3>
           </div>
         </div>
         <div className="row mt-5 justify-content-center">
@@ -129,7 +133,7 @@ class AllStatesRecords extends React.Component {
       <div>
         <div className="row mt-5 justify-content-center">
           <div className="col-6 text-center">
-            <h3>Last 50 days table (all states)</h3>
+            <h3>Last {NUM_RECORDS} day details table (all states)</h3>
           </div>
         </div>
         <div className="row mt-5 justify-content-center">

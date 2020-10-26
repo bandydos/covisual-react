@@ -1,5 +1,4 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'react-bootstrap';
 import { Navbar, Nav } from 'react-bootstrap';
@@ -8,6 +7,7 @@ import AllStatesRecords from './AllStatesRecords';
 import StateRecords from './StateRecords';
 
 class Navigate extends React.Component {
+    // A good looking navbar that can navigate through routing.
     render() {
         return (
             <Router>
@@ -22,14 +22,14 @@ class Navigate extends React.Component {
                                 <Link to="/" className="text-white">Home</Link>
                             </Nav.Link>
                             <Nav.Link>
-                                <Link to="/staterecords" className="text-white">State records</Link>
+                                <Link to="/allstatesrecords" className="text-white">Total US records</Link>
                             </Nav.Link>
                         </Nav>
                     </Navbar.Collapse>
                 </Navbar>
                 <Switch>
-                    <Route path="/staterecords" exact component={StateRecords}></Route>
-                    <Route path="/" exact component={AllStatesRecords}></Route>
+                    <Route path="/" exact component={StateRecords}></Route>
+                    <Route path="/allstatesrecords" exact component={AllStatesRecords}></Route>
                 </Switch>
             </Router>
         )

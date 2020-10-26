@@ -1,5 +1,4 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'react-bootstrap';
 import { Table } from 'react-bootstrap';
@@ -16,23 +15,32 @@ class StateRecords extends React.Component {
     }
   }
 
+  // Function for cleaning up date format (example: 20201016 to 16/10/2020).
+  cleanupDate(d) {
+    return d.slice(6) + '/' + d.slice(4, 6) + '/' + d.slice(0, 4);
+  }
+
   async getData(stt) {
+    // URL takes state postal code for example: NY or AZ.
     const url = `https://api.covidtracking.com/v1/states/${stt}/daily.json`;
 
+    // Fetch API.
     const response = await fetch(url);
     const jsonresponse = await response.json();
 
     const records = [];
 
+    // If response is oke => push objects into array.
     if (response.ok) {
       for (let i = 0; i < jsonresponse.length; i++) {
         records.push({
-          'date': jsonresponse[i].date,
+          'date': this.cleanupDate(String(jsonresponse[i].date)),
           'deathstoday': jsonresponse[i].deathIncrease,
           'deathstotal': jsonresponse[i].death
         });
       }
     } else {
+      // If not oke => prompt.
       alert(`Something went wrong, status ${response.status}.`);
       return;
     }
@@ -41,15 +49,17 @@ class StateRecords extends React.Component {
   }
 
   async componentDidMount() {
-    const data = await this.getData('ny');
+    const firstState = 'ny'; // First fetch for NY.
+    const data = await this.getData(firstState); // Get data on componentDidMount. 
     this.setState({
       loading: false,
       stt: 'New York',
-      records: data
+      records: data // Set state (loading = done, stt is NY and fill in data).
     })
   }
 
   renderDropDown() {
+    // Select (dropdown) options, labels (names) and values (Postal codes).
     const options = [
       { label: "Alabama", value: "AL" },
       { label: "Alaska", value: "AK" },
@@ -116,22 +126,22 @@ class StateRecords extends React.Component {
       <div>
         <div className="row mt-5 justify-content-center">
           <div className="col-10">
-          <Select
-            placeholder="Select state"
-            options={options}
-            onChange={async (value) => {
-              const data = await this.getData(value.value);
-              this.setState({
-                loading: false,
-                stt: value.label,
-                records: data
-              })
-            }}
-          >
-          </Select>
+            <Select // React select.
+              placeholder="Select state"
+              options={options} // Give options.
+              onChange={async (v) => {
+                const data = await this.getData(v.value); // Fetch new data on change (for v.value (NY, AZ...)).
+                this.setState({
+                  loading: false,
+                  stt: v.label,
+                  records: data // Set new state.
+                })
+              }}
+            >
+            </Select>
+          </div>
         </div>
       </div>
-          </div>
     )
   }
 
@@ -142,6 +152,7 @@ class StateRecords extends React.Component {
     const ydeathstoday = [];
     const ydeathstotal = [];
 
+    // Loop from recent to new and push when deaths get recorded.
     for (let i = recs.length - 1; i >= 0; i--) {
       if (recs[i].deathstotal > 0) {
         xdates.push(recs[i].date);
@@ -150,7 +161,8 @@ class StateRecords extends React.Component {
       }
     }
 
-    const dataTotalDeaths = {
+    // Chartjs data for total deaths.
+    const dataDeathsTotal = {
       labels: xdates,
       datasets: [
         {
@@ -162,7 +174,8 @@ class StateRecords extends React.Component {
       ]
     }
 
-    const dataDeathsPerDay = {
+    // Chartjs data for deaths per day.
+    const dataDeathsToday = {
       labels: xdates,
       datasets: [
         {
@@ -183,12 +196,12 @@ class StateRecords extends React.Component {
         </div>
         <div className="row mt-5 justify-content-center">
           <div className="col-10">
-            <Line data={dataTotalDeaths}></Line>
+            <Line data={dataDeathsTotal}></Line>
           </div>
         </div>
         <div className="row mt-5 justify-content-center">
           <div className="col-10">
-            <Line data={dataDeathsPerDay}></Line>
+            <Line data={dataDeathsToday}></Line>
           </div>
         </div>
         <br></br><br></br>
@@ -197,12 +210,12 @@ class StateRecords extends React.Component {
   }
 
 
-
   renderRecords() {
     const elems = [];
 
-    const NUM_RECORDS = 50;
+    const NUM_RECORDS = 50; // Number of records to display.
 
+    // Push <td> elements in elements array (render in return).
     for (let i = 0; i < NUM_RECORDS; i++) {
       elems.push(
         <tbody key={i}>
@@ -219,7 +232,7 @@ class StateRecords extends React.Component {
       <div>
         <div className="row mt-5 justify-content-center">
           <div className="col-6 text-center">
-            <h3>Last 50 days table for {this.state.stt}</h3>
+            <h3>Last {NUM_RECORDS} day details table for {this.state.stt}</h3>
           </div>
         </div>
         <div className="row mt-5 justify-content-center">
