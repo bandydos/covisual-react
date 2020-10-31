@@ -3,7 +3,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'react-bootstrap';
 import { Navbar, Nav } from 'react-bootstrap';
 import { Route, BrowserRouter as Router, Switch, Link } from 'react-router-dom';
-import AllStatesRecords from './components/AllStatesRecords';
+import RenderRecords from './components/RenderRecords';
 
 function App() {
   return (
@@ -26,10 +26,10 @@ function App() {
       </Navbar>
       <Switch>
         <Route exact path="/">
-          <AllStatesRecords scope="state"></AllStatesRecords>
+          <RenderRecords scope="state"></RenderRecords>
         </Route>
         <Route path="/allstatesrecords" exact>
-          <AllStatesRecords scope="total"></AllStatesRecords>
+          <RenderRecords scope="total"></RenderRecords>
         </Route>
       </Switch>
     </Router>

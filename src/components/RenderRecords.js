@@ -6,7 +6,7 @@ import { Line } from 'react-chartjs-2';
 import stateOptions from '../data/stateOptions';
 import Select from 'react-select';
 
-class AllStatesRecords extends React.Component {
+class RenderRecords extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
@@ -17,14 +17,16 @@ class AllStatesRecords extends React.Component {
     }
   }
 
+  // Function to clean date format (yyyymmdd to dd-mm-yyyy).
   cleanupDate(d) {
     return d.slice(6) + '/' + d.slice(4, 6) + '/' + d.slice(0, 4);
   }
 
-  // Same as in StateRecords.js but different url (all states).
+  // Fetch records.
   fetchRecords = async () => {
     let response;
 
+    // Check props for location scope (total US or single state).
     if (this.props.scope === 'total') {
       response = await fetch("https://api.covidtracking.com/v1/us/daily.json");
     } else if (this.props.scope === 'state') {
@@ -33,18 +35,21 @@ class AllStatesRecords extends React.Component {
       alert('Something went wrong.');
     }
 
-    const jsonresponse = await response.json();
+    const jsonresponse = await response.json(); // Await as json.
 
-    const recs = [];
+    const recs = []; // Records array.
 
+    // If response.ok (status 200 / 202) === true.
     if (response.ok) {
       for (let i = 0; i < jsonresponse.length; i++) {
+        // Push object into records array.
         recs.push({
           'date': this.cleanupDate(String(jsonresponse[i].date)),
           'deathstoday': jsonresponse[i].deathIncrease,
           'deathstotal': jsonresponse[i].death
         });
       }
+      // Set state (loading => loaded and fill up records).
       this.setState({
         loading: false,
         records: recs
@@ -55,31 +60,38 @@ class AllStatesRecords extends React.Component {
     }
   }
 
+  // If props change when rendering component.
   componentDidUpdate = async (prevProps) => {
+    // Compare previous props to this.props.
     if (prevProps.scope !== this.props.scope) {
-      await this.fetchRecords();
+      await this.fetchRecords(); // Fetch records if changed.
     }
   }
 
-  async componentDidMount() {
+  // If component rendered.
+  componentDidMount = async () => {
+    // Await fetch and rerender.
     await this.fetchRecords();
   }
 
-
   renderChart() {
-    const recs = this.state.records;
+    const { records } = this.state; // Destruct records from state.
+
+    // X and Y labels for chart.
     const xdates = [];
     const ydeathstoday = [];
     const ydeathstotal = [];
 
-    for (let i = recs.length - 1; i >= 0; i--) {
-      if (recs[i].deathstotal > 0) {
-        xdates.push(recs[i].date);
-        ydeathstoday.push(recs[i].deathstoday);
-        ydeathstotal.push(recs[i].deathstotal);
+    // Loop inverted.
+    for (let i = records.length - 1; i >= 0; i--) {
+      if (records[i].deathstotal > 0) { // Start pushing from first death.
+        xdates.push(records[i].date);
+        ydeathstoday.push(records[i].deathstoday);
+        ydeathstotal.push(records[i].deathstotal);
       }
     }
 
+    // Table data for total deaths.
     const dataTotalDeaths = {
       labels: xdates,
       datasets: [
@@ -92,7 +104,8 @@ class AllStatesRecords extends React.Component {
       ]
     }
 
-    const dataDeathsPerDay = {
+    // Table data for deaths today (deaths per day).
+    const dataDeathsToday = {
       labels: xdates,
       datasets: [
         {
@@ -123,7 +136,7 @@ class AllStatesRecords extends React.Component {
         </div>
         <div className="row mt-5 justify-content-center">
           <div className="col-10">
-            <Line data={dataDeathsPerDay}></Line>
+            <Line data={dataDeathsToday}></Line>
           </div>
         </div>
         <br></br><br></br>
@@ -131,21 +144,17 @@ class AllStatesRecords extends React.Component {
     )
   }
 
-
-  renderRecords() {
-    const elems = [];
-
-    const NUM_RECORDS = 50;
+  renderTable() {
+    const trs = []; // Table rows with <td>'s.
+    const NUM_RECORDS = 50; // Number of records to display.
 
     for (let i = 0; i < NUM_RECORDS; i++) {
-      elems.push(
-        <tbody key={i}>
-          <tr>
-            <td>{this.state.records[i].date}</td>
-            <td>{this.state.records[i].deathstoday}</td>
-            <td>{this.state.records[i].deathstotal}</td>
-          </tr>
-        </tbody>
+      trs.push(
+        <tr key={i}>
+          <td>{this.state.records[i].date}</td>
+          <td>{this.state.records[i].deathstoday}</td>
+          <td>{this.state.records[i].deathstotal}</td>
+        </tr>
       )
     }
 
@@ -153,7 +162,11 @@ class AllStatesRecords extends React.Component {
       <div>
         <div className="row mt-5 justify-content-center">
           <div className="col-6 text-center">
-            <h3>Last {NUM_RECORDS} day details table (all states)</h3>
+            {this.props.scope === 'total' ? (
+              <h3>Last {NUM_RECORDS} day details table (all states)</h3>
+            ) : (
+                <h3>Last {NUM_RECORDS} day details table ({this.state.lbl})</h3>
+              )}
           </div>
         </div>
         <div className="row mt-5 justify-content-center">
@@ -166,7 +179,9 @@ class AllStatesRecords extends React.Component {
                   <th>Deaths (total)</th>
                 </tr>
               </thead>
-              {elems}
+              <tbody>
+                {trs}
+              </tbody>
             </Table>
           </div>
         </div>
@@ -174,12 +189,13 @@ class AllStatesRecords extends React.Component {
     )
   }
 
+  // Handle select onChange (don't setState directly in render method).
   handleChange = async (event) => {
-    await this.fetchRecords();
     this.setState({
+      loading: true,
       val: event.value,
       lbl: event.label
-    })
+    }, await this.fetchRecords) // Callback to fetchRecords.
   }
 
   renderDropdown = () => {
@@ -187,7 +203,7 @@ class AllStatesRecords extends React.Component {
       <div>
         <div className="row mt-5 justify-content-center">
           <div className="col-10">
-            <Select // React select.
+            <Select
               placeholder="Select state"
               options={stateOptions} // Give options.
               onChange={this.handleChange}
@@ -198,10 +214,32 @@ class AllStatesRecords extends React.Component {
     )
   }
 
-
+  // Main render function.
   render() {
-    console.log(this.props);
-    console.log(this.state);
+    if (this.state.loading) {
+      return (
+        <div className="container">
+          <div className="row mt-5 justify-content-around">
+            <div className="col-10">
+              <h5>Loading...</h5>
+            </div>
+          </div>
+        </div>
+      )
+    }
+
+    if (this.state.records.length < 1) {
+      return (
+        <div className="container">
+          <div className="row mt-5 justify-content-around">
+            <div className="col-10">
+              <h5>No data found...</h5>
+            </div>
+          </div>
+        </div>
+      )
+    }
+
     return (
       <div>
         <div className="container">
@@ -209,21 +247,13 @@ class AllStatesRecords extends React.Component {
             <div></div>
           ) : (
               this.renderDropdown()
-            )
-          }
+            )}
           {this.renderChart()}
-          <div>
-            {this.state.loading || this.state.records.length < 1 ? (
-              <div className="container mt-5">Loading...</div>
-            ) : (
-                this.renderRecords()
-              )
-            }
-          </div>
+          {this.renderTable()}
         </div>
       </div>
     )
   }
 }
 
-export default AllStatesRecords;
+export default RenderRecords;
