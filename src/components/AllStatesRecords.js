@@ -3,13 +3,17 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'react-bootstrap';
 import { Table } from 'react-bootstrap';
 import { Line } from 'react-chartjs-2';
+import stateOptions from '../data/stateOptions';
+import Select from 'react-select';
 
 class AllStatesRecords extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
       loading: true,
-      records: []
+      records: [],
+      val: 'ny',
+      lbl: 'New York'
     }
   }
 
@@ -18,36 +22,47 @@ class AllStatesRecords extends React.Component {
   }
 
   // Same as in StateRecords.js but different url (all states).
-  async getData() {
-    const url = 'https://api.covidtracking.com/v1/us/daily.json';
+  fetchRecords = async () => {
+    let response;
 
-    const response = await fetch(url);
+    if (this.props.scope === 'total') {
+      response = await fetch("https://api.covidtracking.com/v1/us/daily.json");
+    } else if (this.props.scope === 'state') {
+      response = await fetch(`https://api.covidtracking.com/v1/states/${this.state.val}/daily.json`);
+    } else {
+      alert('Something went wrong.');
+    }
+
     const jsonresponse = await response.json();
 
-    const records = [];
+    const recs = [];
 
     if (response.ok) {
       for (let i = 0; i < jsonresponse.length; i++) {
-        records.push({
-          'date': this.cleanupDate(String(jsonresponse[i].date)), 
+        recs.push({
+          'date': this.cleanupDate(String(jsonresponse[i].date)),
           'deathstoday': jsonresponse[i].deathIncrease,
           'deathstotal': jsonresponse[i].death
         });
       }
+      this.setState({
+        loading: false,
+        records: recs
+      })
     } else {
       alert(`Something went wrong, status ${response.status}.`);
       return;
     }
+  }
 
-    return records;
+  componentDidUpdate = async (prevProps) => {
+    if (prevProps.scope !== this.props.scope) {
+      await this.fetchRecords();
+    }
   }
 
   async componentDidMount() {
-    const data = await this.getData();
-    this.setState({
-      loading: false,
-      records: data
-    })
+    await this.fetchRecords();
   }
 
 
@@ -93,7 +108,12 @@ class AllStatesRecords extends React.Component {
       <div>
         <div className="row mt-5 justify-content-center">
           <div className="col-6 text-center">
-            <h3>Covid-19 death records for all states</h3>
+            {this.props.scope === 'total' ? (
+              <h3>Covid-19 death records for all states</h3>
+            ) : (
+                <h3>Covid-19 death records for {this.state.lbl}</h3>
+              )
+            }
           </div>
         </div>
         <div className="row mt-5 justify-content-center">
@@ -154,11 +174,43 @@ class AllStatesRecords extends React.Component {
     )
   }
 
+  handleChange = async (event) => {
+    await this.fetchRecords();
+    this.setState({
+      val: event.value,
+      lbl: event.label
+    })
+  }
+
+  renderDropdown = () => {
+    return (
+      <div>
+        <div className="row mt-5 justify-content-center">
+          <div className="col-10">
+            <Select // React select.
+              placeholder="Select state"
+              options={stateOptions} // Give options.
+              onChange={this.handleChange}
+            ></Select>
+          </div>
+        </div>
+      </div >
+    )
+  }
+
 
   render() {
+    console.log(this.props);
+    console.log(this.state);
     return (
       <div>
         <div className="container">
+          {this.props.scope === 'total' ? (
+            <div></div>
+          ) : (
+              this.renderDropdown()
+            )
+          }
           {this.renderChart()}
           <div>
             {this.state.loading || this.state.records.length < 1 ? (

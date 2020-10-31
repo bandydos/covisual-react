@@ -4,7 +4,6 @@ import 'react-bootstrap';
 import { Navbar, Nav } from 'react-bootstrap';
 import { Route, BrowserRouter as Router, Switch, Link } from 'react-router-dom';
 import AllStatesRecords from './components/AllStatesRecords';
-import StateRecords from './components/StateRecords';
 
 function App() {
   return (
@@ -26,8 +25,12 @@ function App() {
         </Navbar.Collapse>
       </Navbar>
       <Switch>
-        <Route path="/" exact component={StateRecords}></Route>
-        <Route path="/allstatesrecords" exact component={AllStatesRecords}></Route>
+        <Route exact path="/">
+          <AllStatesRecords scope="state"></AllStatesRecords>
+        </Route>
+        <Route path="/allstatesrecords" exact>
+          <AllStatesRecords scope="total"></AllStatesRecords>
+        </Route>
       </Switch>
     </Router>
   );
