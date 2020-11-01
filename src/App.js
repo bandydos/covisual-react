@@ -3,9 +3,10 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'react-bootstrap';
 import { Navbar, Nav } from 'react-bootstrap';
 import { Route, BrowserRouter as Router, Switch, Link } from 'react-router-dom';
-import Display from './components/Display';
+import FetchAndDisplay from './components/FetchAndDisplay';
 
 function App() {
+  // Main App (navigation and routing).
   return (
     <Router>
       <Navbar bg="primary" expand="lg">
@@ -26,10 +27,10 @@ function App() {
       </Navbar>
       <Switch>
         <Route exact path="/">
-          <Display scope="state"></Display>
+          <FetchAndDisplay scope="state"></FetchAndDisplay>
         </Route>
         <Route path="/total" exact>
-          <Display scope="total"></Display>
+          <FetchAndDisplay scope="total"></FetchAndDisplay>
         </Route>
       </Switch>
     </Router>

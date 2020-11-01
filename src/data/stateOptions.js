@@ -56,8 +56,8 @@ const stateOptions = [
     { label: "Micronesia", value: "FM" },
     { label: "Northern Marianas", value: "MP" },
     { label: "Palau", value: "PW" },
-    { label: "PuertoRico", value: "PR" },
-    { label: "VirginIslands", value: "VI" }
+    { label: "Puerto Rico", value: "PR" },
+    { label: "Virgin Islands", value: "VI" }
 ]
 
 export default stateOptions;
