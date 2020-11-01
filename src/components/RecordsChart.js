@@ -49,12 +49,12 @@ export class RecordsChart extends Component {
         // JSX to return on render.
         return (
             <div>
-                <div className="row mt-5 justify-content-center">
+                <div className="row mt-4 justify-content-center">
                     <div className="col-10">
                         <Line data={dataTotalDeaths}></Line>
                     </div>
                 </div>
-                <div className="row mt-5 justify-content-center">
+                <div className="row mt-4 justify-content-center">
                     <div className="col-10">
                         <Line data={dataDeathsToday}></Line>
                     </div>

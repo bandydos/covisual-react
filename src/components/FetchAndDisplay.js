@@ -100,7 +100,7 @@ export class FetchAndDisplay extends Component {
 
         // JSX to return on render.
         return (
-            <div>
+            <div className="container">
                 <div>
                     {this.props.scope === 'state' ? (
                         <div className="row mt-5 justify-content-center">
