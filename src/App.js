@@ -3,7 +3,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'react-bootstrap';
 import { Navbar, Nav } from 'react-bootstrap';
 import { Route, BrowserRouter as Router, Switch, Link } from 'react-router-dom';
-import RenderRecords from './components/RenderRecords';
+import Display from './components/Display';
 
 function App() {
   return (
@@ -19,17 +19,17 @@ function App() {
               <Link to="/" className="text-white">Home</Link>
             </Nav.Link>
             <Nav.Link>
-              <Link to="/allstatesrecords" className="text-white">Total US records</Link>
+              <Link to="/total" className="text-white">Total US records</Link>
             </Nav.Link>
           </Nav>
         </Navbar.Collapse>
       </Navbar>
       <Switch>
         <Route exact path="/">
-          <RenderRecords scope="state"></RenderRecords>
+          <Display scope="state"></Display>
         </Route>
-        <Route path="/allstatesrecords" exact>
-          <RenderRecords scope="total"></RenderRecords>
+        <Route path="/total" exact>
+          <Display scope="total"></Display>
         </Route>
       </Switch>
     </Router>
