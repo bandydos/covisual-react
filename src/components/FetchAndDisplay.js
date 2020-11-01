@@ -4,13 +4,12 @@ import stateOptions from '../data/stateOptions';
 import RecordsChart from './RecordsChart';
 import RecordsTable from './RecordsTable';
 
-export class Display extends Component {
+export class FetchAndDisplay extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
             loading: true,
-            selected: false,
             records: [],
             val: 'ny', // Initial fetch for ny.
             lbl: 'New York'
@@ -74,19 +73,17 @@ export class Display extends Component {
         await this.fetchRecords();
     }
 
-
     // Handle select onChange (don't setState directly in render method).
     handleChange = async (event) => {
         this.setState({
-            loading: true,
-            selected: true,
+            loading: true, // Loading new data.
             val: event.value,
             lbl: event.label
         }, await this.fetchRecords) // Callback to fetchRecords.
     }
 
-
     render() {
+        // If loading return loadscreen.
         if (this.state.loading) {
             return (
                 <div className="container">
@@ -101,6 +98,7 @@ export class Display extends Component {
 
         const NUM_RECORDS = 50; // Number of records (to display in table).
 
+        // JSX to return on render.
         return (
             <div>
                 <div>
@@ -130,13 +128,12 @@ export class Display extends Component {
                         </div>
                     </div>
                     <RecordsChart rcrds={this.state.records} lbl={this.state.lbl}></RecordsChart>
-
                     <div className="row mt-5 justify-content-center">
                         <div className="col-6 text-center">
-                            {this.props.scope === 'total' ? (
-                                <h3>Last {NUM_RECORDS} day details table (all states)</h3>
+                            {this.props.scope === 'state' ? (
+                                <h3>Last {NUM_RECORDS} day details table ({this.state.lbl})</h3>
                             ) : (
-                                    <h3>Last {NUM_RECORDS} day details table ({this.state.lbl})</h3>
+                                    <h3>Last {NUM_RECORDS} day details table (all states)</h3>
                                 )}
                         </div>
                     </div>
@@ -147,4 +144,4 @@ export class Display extends Component {
     }
 }
 
-export default Display
+export default FetchAndDisplay
