@@ -74,12 +74,12 @@ export class FetchAndDisplay extends Component {
     }
 
     // Handle select onChange (don't setState directly in render method).
-    handleChange = async (event) => {
+    handleChange = (event) => {
         this.setState({
             loading: true, // Loading new data.
             val: event.value,
             lbl: event.label
-        }, await this.fetchRecords) // Callback to fetchRecords.
+        }, this.fetchRecords) // Callback to fetchRecords.
     }
 
     render() {
