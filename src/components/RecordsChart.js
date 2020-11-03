@@ -14,11 +14,43 @@ export class RecordsChart extends Component {
         for (let i = rcrds.length - 1; i >= 0; i--) {
             // Start pushing from first death.
             if (rcrds[i].deathstotal > 0) {
-                xdates.push(rcrds[i].date);
-                ydeathstoday.push(rcrds[i].deathstoday);
-                ydeathstotal.push(rcrds[i].deathstotal);
+                ydeathstoday.push(rcrds[i].deathstoday); // Push todays deaths.
             }
         }
+
+        const num_points = 100; // Number of points.
+        let range = parseInt(ydeathstoday.length / num_points); // Range of numbers.
+        let nextRange = range;
+
+        for (let i = rcrds.length - 1; i >= 0; i--) {
+            if (rcrds[i].deathstotal > 0) {
+                ydeathstotal.push(rcrds[i].deathstotal); // Push total deaths and dates.
+                xdates.push(rcrds[i].date);
+                i = i - range; // Step one range further.
+            }
+        }
+
+        const deathsTodayRanges = [];
+        let start = 0;
+
+        for (let j = 0; j < num_points; j++) {
+            deathsTodayRanges.push(ydeathstoday.slice(start, range));
+            start = start + nextRange;
+            range = range + nextRange;
+
+        }
+
+        const averages = [];
+        let sum = 0;
+        for (let i = 0; i < deathsTodayRanges.length; i++) {
+            sum = deathsTodayRanges[i].reduce((a, b) => a + b)
+            averages.push(parseInt(sum / deathsTodayRanges[i].length))
+        }
+
+        console.log(deathsTodayRanges)
+        console.log(averages)
+
+
 
         // Table data for total deaths.
         const dataTotalDeaths = {
@@ -39,7 +71,7 @@ export class RecordsChart extends Component {
             datasets: [
                 {
                     label: 'Deaths per day',
-                    data: ydeathstoday,
+                    data: averages,
                     borderColor: ['#CD5C5C'],
                     backgroundColor: ['#CD5C5C']
                 }
